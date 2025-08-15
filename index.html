@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chave do Nosso Universo</title>
+  <style>
+    :root{
+      --bg1:#b1002b; /* vermelho profundo */
+      --bg2:#ff3b58; /* vermelho claro */
+      --card-bg: rgba(255,255,255,0.12);
+      --text:#fff;
+      --muted: rgba(255,255,255,0.85);
+      --dot-empty: rgba(255,255,255,0.55);
+      --dot-fill: #fff;
+      --btn-disabled: rgba(255,255,255,0.35);
+      --btn-enabled: #ffffff;
+      --btn-text: #b1002b;
+      --shadow: 0 20px 40px rgba(0,0,0,0.35);
+      --radius: 22px;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: radial-gradient(1100px 1100px at 50% 0%, var(--bg2), var(--bg1));
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;
+    }
+    .frame{
+      min-height:100vh;
+      padding:max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      display:flex; align-items:center; justify-content:center;
+      position:relative; overflow:hidden;
+    }
+    .heart-bg{
+      position:absolute;
+      bottom:max(18px, calc(env(safe-area-inset-bottom) + 6px));
+      left:50%; transform:translateX(-50%);
+      opacity:.18; width:160px; height:auto; pointer-events:none;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.25));
+    }
+    .card{
+      width:min(430px, 92vw);
+      background:var(--card-bg);
+      border:1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      padding:30px 24px 26px;
+      text-align:center;
+    }
+    .icon-lock{ width:84px; height:84px; margin:4px auto 16px; display:block;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25));
+    }
+    h1{ font-weight:700; font-size:26px; margin:0 0 18px; letter-spacing:-0.02em; }
+    .pin-dots{ display:flex; gap:12px; justify-content:center; margin:12px 0 22px; flex-wrap:wrap;}
+    .dot{ width:14px; height:14px; border-radius:50%; border:2px solid var(--dot-empty); background:transparent;}
+    .dot.filled{ background:var(--dot-fill); border-color:var(--dot-fill); }
+    .forgot{ display:inline-flex; align-items:center; gap:8px; margin:6px 0 18px; color:var(--muted); text-decoration:none; font-weight:600;}
+    .forgot svg{ opacity:.9 }
+    button{
+      width:100%; border:none; border-radius:16px; padding:16px 18px;
+      font-size:17px; font-weight:700; letter-spacing:.2px;
+      transition: transform .02s ease, box-shadow .2s ease, opacity .2s ease;
+      box-shadow:0 10px 24px rgba(0,0,0,0.25);
+    }
+    button:disabled{ background:var(--btn-disabled); color:rgba(0,0,0,0.45); opacity:.8; }
+    button.enabled{ background:var(--btn-enabled); color:var(--btn-text); }
+    button:active{ transform:scale(.995); }
+    .note{ margin-top:14px; font-size:13px; color:rgba(255,255,255,0.75); }
+    .hidden-input{ position:absolute; opacity:0; pointer-events:none; width:0; height:0; border:0; padding:0; margin:0; }
+    @media (min-aspect-ratio: 9/19){ .card{ padding: 32px 28px 28px; } }
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)}}
+  </style>
+</head>
+<body>
+  <div class="frame" onclick="focusInput()">
+    <!-- Coração decorativo -->
+    <svg class="heart-bg" viewBox="0 0 200 180" aria-hidden="true">
+      <path d="M100 170s-58-33-84-68C-7 65 7 24 40 16c21-5 39 6 49 23 10-17 28-28 49-23 33 8 47 49 24 86-26 35-84 68-84 68z" fill="#fff"/>
+    </svg>
+
+    <div class="card" role="dialog" aria-labelledby="title" aria-describedby="desc">
+      <!-- Cadeado com coração -->
+      <svg class="icon-lock" viewBox="0 0 128 128" aria-hidden="true">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+            <stop offset="1" stop-color="#ffe1e6" stop-opacity=".85"/>
+          </linearGradient>
+        </defs>
+        <rect x="24" y="54" rx="14" ry="14" width="80" height="58" fill="url(#g)" />
+        <path d="M44 54v-8a20 20 0 1140 0v8h-10v-8a10 10 0 10-20 0v8H44z" fill="#fff"/>
+        <path d="M64 90c-9-6-12-10-12-15a8 8 0 0115-3 8 8 0 0115 3c0 5-3 9-12 15l-3 2-3-2z" fill="#ff3b58"/>
+      </svg>
+
+      <h1 id="title">Digite a senha de acesso</h1>
+      <p id="desc" style="margin:0 0 8px; opacity:.9">São 8 dígitos. Toque para abrir o teclado.</p>
+
+      <div class="pin-dots" aria-label="Campos da senha">
+        <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
+        <div class="dot" id="d4"></div><div class="dot" id="d5"></div>
+        <div class="dot" id="d6"></div><div class="dot" id="d7"></div>
+      </div>
+
+      <a class="forgot" href="#" onclick="alert('Dica: Nossa data ❤️'); return false;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+        </svg>
+        Esqueci minha senha
+      </a>
+
+      <button id="btn" type="button" disabled>Continuar</button>
+      <p class="note">Dica extra: encoste o cartão para magicamente abrir este portal. 💘</p>
+    </div>
+
+    <input id="pin" class="hidden-input" type="tel" inputmode="numeric" autocomplete="one-time-code" maxlength="8" aria-label="Senha numérica de 8 dígitos">
+  </div>
+
+  <script>
+    const pin = document.getElementById('pin');
+    const btn = document.getElementById('btn');
+    const dots = [...document.querySelectorAll('.dot')];
+
+    function updateDots(value){
+      dots.forEach((d,i)=> i < value.length ? d.classList.add('filled') : d.classList.remove('filled'));
+      if(value.length === 8){
+        btn.disabled = false;
+        btn.classList.add('enabled');
+      }else{
+        btn.disabled = true;
+        btn.classList.remove('enabled');
+      }
+    }
+    function focusInput(){ pin.focus(); }
+
+    pin.addEventListener('input', ()=>{
+      pin.value = pin.value.replace(/\D/g,'');
+      updateDots(pin.value);
+    });
+
+    btn.addEventListener('click', ()=>{
+      const senhaCorreta = "10122024";
+      if(!btn.disabled){
+        if(pin.value === senhaCorreta){
+          window.location.href = "https://www.canva.com/design/DAGwJZ8Y_QU/r_Ted-YfNCBPMP_2itpsww/edit?utm_content=DAGwJZ8Y_QU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton";
+        }else{
+          if(navigator.vibrate) navigator.vibrate(80);
+          const card = document.querySelector('.card');
+          card.style.animation = 'shake .3s';
+          setTimeout(()=>{ card.style.animation = ''; }, 320);
+          pin.value = '';
+          updateDots('');
+        }
+      }
+    });
+
+    window.addEventListener('load', ()=>{ setTimeout(()=>focusInput(), 300); });
+  </script>
+</body>
+</html>
